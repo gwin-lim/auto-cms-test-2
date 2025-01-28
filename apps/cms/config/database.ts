@@ -27,7 +27,7 @@ export default ({ env }) => {
   return {
     connection: {
       client,
-      ...connections[client],
+      ...(connections[client] || {}),
       acquireConnectionTimeout: env.int('DATABASE_CONNECTION_TIMEOUT', 60000),
     },
   };
