@@ -138,3 +138,5 @@ dist
 build
 .strapi-updater.json
 .strapi-cloud.json
+apps/cms/public/uploads/**/*
+!apps/cms/public/uploads/.gitkeep
