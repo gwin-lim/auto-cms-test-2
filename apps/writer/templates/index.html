@@ -1,91 +1,128 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
     <title>블로그 포스트 생성기</title>
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-</head>
-<body class="bg-gray-100 min-h-screen">
+  </head>
+  <body class="bg-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold text-center mb-8">AI 블로그 포스트 생성기</h1>
-        
-        <div class="max-w-2xl mx-auto">
-            <form id="generateForm" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="keyword">
-                        키워드
-                    </label>
-                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                           id="keyword" type="text" name="keyword" placeholder="키워드를 입력하세요">
-                </div>
-                <div class="flex items-center justify-center">
-                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                            type="submit">
-                        포스트 생성하기
-                    </button>
-                </div>
-            </form>
+      <h1 class="text-3xl font-bold text-center mb-8">
+        AI 블로그 포스트 생성기
+      </h1>
 
-            <div id="result" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 hidden">
-                <h2 class="text-xl font-bold mb-4">생성된 포스트</h2>
-                <div id="content" class="prose mb-6"></div>
-                
-                <div id="imageContainer" class="mb-6 hidden">
-                    <h3 class="text-lg font-bold mb-2">생성된 이미지</h3>
-                    <img id="generatedImage" class="w-full rounded-lg shadow-lg" alt="생성된 이미지">
-                </div>
-            </div>
+      <div class="max-w-2xl mx-auto">
+        <form
+          id="generateForm"
+          class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+        >
+          <div class="mb-4">
+            <label
+              class="block text-gray-700 text-sm font-bold mb-2"
+              for="keyword"
+            >
+              키워드
+            </label>
+            <input
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              id="keyword"
+              type="text"
+              name="keyword"
+              placeholder="키워드를 입력하세요"
+            />
+          </div>
+          <div class="flex items-center justify-center">
+            <button
+              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              type="submit"
+            >
+              포스트 생성하기
+            </button>
+          </div>
+        </form>
 
-            <div id="loading" class="text-center hidden">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-                <p class="mt-4">포스트와 이미지를 생성하고 있습니다...</p>
-            </div>
+        <div
+          id="result"
+          class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 hidden"
+        >
+          <h2 class="text-xl font-bold mb-4 sr-only">생성된 포스트</h2>
+          <div
+            id="imageContainer"
+            class="mb-6 hidden"
+          >
+            <img
+              id="generatedImage"
+              class="w-full rounded-lg shadow-lg"
+              alt="생성된 이미지"
+            />
+          </div>
+          <div
+            id="content"
+            class="prose mb-6"
+          ></div>
         </div>
+
+        <div
+          id="loading"
+          class="text-center hidden"
+        >
+          <div
+            class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"
+          ></div>
+          <p class="mt-4">포스트와 이미지를 생성하고 있습니다...</p>
+        </div>
+      </div>
     </div>
 
     <script>
-        document.getElementById('generateForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const keyword = document.getElementById('keyword').value;
-            const loading = document.getElementById('loading');
-            const result = document.getElementById('result');
-            const content = document.getElementById('content');
-            const imageContainer = document.getElementById('imageContainer');
-            const generatedImage = document.getElementById('generatedImage');
+      document
+        .getElementById('generateForm')
+        .addEventListener('submit', async (e) => {
+          e.preventDefault()
 
-            loading.classList.remove('hidden');
-            result.classList.add('hidden');
+          const keyword = document.getElementById('keyword').value
+          const loading = document.getElementById('loading')
+          const result = document.getElementById('result')
+          const content = document.getElementById('content')
+          const imageContainer = document.getElementById('imageContainer')
+          const generatedImage = document.getElementById('generatedImage')
 
-            try {
-                const formData = new FormData();
-                formData.append('keyword', keyword);
+          loading.classList.remove('hidden')
+          result.classList.add('hidden')
 
-                const response = await fetch('/generate', {
-                    method: 'POST',
-                    body: formData
-                });
+          try {
+            const formData = new FormData()
+            formData.append('keyword', keyword)
 
-                const { data } = await response.json();
+            const response = await fetch('/generate', {
+              method: 'POST',
+              body: formData,
+            })
 
-                if (data.error) {
-                    alert('오류가 발생했습니다: ' + data.error);
-                } else {
-                    content.innerHTML = data.content.replace(/\n/g, '<br>');
-                    
-                    if (data.image_url) {
-                        generatedImage.src = data.image_url;
-                    }
-                    
-                    result.classList.remove('hidden');
-                }
-            } catch (error) {
-                alert('오류가 발생했습니다: ' + error.message);
-            } finally {
-                loading.classList.add('hidden');
+            const { data } = await response.json()
+
+            if (data.error) {
+              alert('오류가 발생했습니다: ' + data.error)
+            } else {
+              content.innerHTML = data.content.replace(/\n/g, '<br>')
+
+              if (data.image_url) {
+                generatedImage.src = data.image_url
+                imageContainer.classList.remove('hidden')
+              }
+
+              result.classList.remove('hidden')
             }
-        });
+          } catch (error) {
+            alert('오류가 발생했습니다: ' + error.message)
+          } finally {
+            loading.classList.add('hidden')
+          }
+        })
     </script>
-</body>
+  </body>
 </html>
